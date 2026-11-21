@@ -136,28 +136,40 @@ def apply_gate(
     _refresh_summary(result)
     return GateApplication(result=result, changes=tuple(changes))
 
-
 def _decisions_by_id(
     gate: Mapping[str, Any] | None,
 ) -> dict[str, tuple[str, list[str]]]:
-    """Map finding id to (worst decision, reasons). not_gated counts as pass."""
+    """Map finding id to (worst decision, reasons). Invalid decisions fail safe."""
     out: dict[str, tuple[str, list[str]]] = {}
+
     if gate is None:
         return out
+
     for entry in gate.get("decisions") or []:
         if not isinstance(entry, dict):
             continue
+
         finding_id = str(entry.get("finding_id", ""))
-        decision = str(entry.get("decision", ""))
+        raw_decision = entry.get("decision")
         reasons = [str(r) for r in (entry.get("reasons") or [])]
-        if decision not in _SEVERITY:
+
+        if raw_decision == "not_gated":
             decision = PASS
+        elif isinstance(raw_decision, str) and raw_decision in _SEVERITY:
+            decision = raw_decision
+        else:
+            decision = REVIEW_ONLY
+            invalid_reason = (
+                "The evidence gate returned a missing or invalid decision."
+            )
+            if invalid_reason not in reasons:
+                reasons.append(invalid_reason)
+
         previous = out.get(finding_id)
         if previous is None or _SEVERITY[decision] > _SEVERITY[previous[0]]:
             out[finding_id] = (decision, reasons)
+
     return out
-
-
 def _add_limitation(finding: dict[str, Any], text: str) -> None:
     limitations = finding.get("limitations")
     if not isinstance(limitations, list):

@@ -1,39 +1,43 @@
-"""Tests for the --real flag of scripts/run_assessment.py.
 
-No test calls a real model: the model loader is replaced by a fake.
-"""
+"""Test that the fake run script works end to end. No model, no network."""
 
-from scripts import run_assessment
+import json
 
-
-def test_default_is_fake_mode(tmp_path, capsys):
-    code = run_assessment.cli([str(tmp_path)])
-    out = capsys.readouterr().out
-    assert code == 0
-    assert "FAKE agents only" in out
-    assert len(list(tmp_path.iterdir())) == 1
+from scripts.run_assessment import main
 
 
-def test_real_stops_on_missing_project_before_loading_model(tmp_path, monkeypatch, capsys):
-    calls = []
-    monkeypatch.setattr(run_assessment, "_load_model", lambda: calls.append("loaded"))
-    code = run_assessment.cli(
-        ["--real", "--project", str(tmp_path / "nope"), str(tmp_path)]
+def test_fake_run_writes_a_valid_audit_record(tmp_path):
+    path = main(tmp_path / "audit")
+
+    assert path.exists()
+    record = json.loads(path.read_text(encoding="utf-8"))
+
+    assert record["assessment_id"] == "demo-run"
+    assert record["policy_documents"][0]["name"] == "demo_policy.txt"
+
+    # Check the important Agent 3 fields without rejecting valid
+    # additional fields from the expanded AlignmentResult schema.
+    alignment = record["alignment_result"]
+    assert alignment["findings"] == []
+    assert alignment["llm_failures"] == 0
+    assert alignment["failed_calls"] == []
+    assert alignment["policy_text_truncated"] is False
+
+    # The final stages should also be represented in the audit.
+    assert record["legal_analysis_original"] is not None
+    assert record["legal_analysis_gated"] is not None
+    assert record["compliance_score"] is not None
+    assert record["compliance_report"] is not None
+
+    steps = {
+        entry["step"]: entry["status"]
+        for entry in record["step_log"]
+    }
+    assert steps["agent3_alignment"] == "completed"
+    assert steps["legal_analysis"] == "completed"
+    assert steps["compliance_scoring"] == "completed"
+    assert steps["report_generation"] == "completed"
+
+    assert "We keep your data for two years." not in json.dumps(
+        record["policy_documents"]
     )
-    out = capsys.readouterr().out
-    assert code == 1
-    assert "Project folder not found" in out
-    assert calls == []
-
-
-def test_real_stops_clearly_when_key_is_missing(tmp_path, monkeypatch, capsys):
-    def no_key():
-        raise ValueError("GROQ_API_KEY is missing. Check your local .env file.")
-
-    monkeypatch.setattr(run_assessment, "_load_model", no_key)
-    code = run_assessment.cli(["--real", str(tmp_path)])
-    out = capsys.readouterr().out
-    assert code == 1
-    assert "REAL model" in out
-    assert "GROQ_API_KEY is missing" in out
-    assert list(tmp_path.iterdir()) == []

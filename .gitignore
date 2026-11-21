@@ -218,5 +218,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Person 3 - Generated legal RAG database
+knowledge_base/chroma_db/
 before_*.json
 after_*.json
