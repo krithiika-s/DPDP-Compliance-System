@@ -5,3 +5,11 @@ pytest
 jsonschema
 langchain
 langchain-groq
+
+# Person 3 - RAG and legal document processing
+langchain-chroma
+langchain-huggingface
+langchain-text-splitters
+chromadb
+sentence-transformers
+pymupdf
