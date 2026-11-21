@@ -168,3 +168,90 @@ def test_changes_to_dict():
     assert entry["finding_id"] == "A-1"
     assert entry["new_status"] == REQUIRES_REVIEW
     assert entry["reason"].startswith("Evidence gate: ")
+
+def test_unknown_gate_decision_fails_safe_to_requires_review():
+    out = apply_gate(
+        legal(lf()),
+        {
+            "decisions": [
+                {
+                    "finding_id": "A-1",
+                    "decision": "unknown_value",
+                    "reasons": [],
+                }
+            ]
+        },
+    )
+    assert status_of(out) == REQUIRES_REVIEW
+    assert any(
+        "invalid decision" in limitation
+        for limitation in out.result["findings"][0]["limitations"]
+    )
+
+
+def test_missing_decision_field_fails_safe_to_requires_review():
+    out = apply_gate(
+        legal(lf()),
+        {
+            "decisions": [
+                {
+                    "finding_id": "A-1",
+                    "reasons": [],
+                }
+            ]
+        },
+    )
+    assert status_of(out) == REQUIRES_REVIEW
+
+
+def test_empty_gate_decision_fails_safe_to_requires_review():
+    out = apply_gate(
+        legal(lf()),
+        {
+            "decisions": [
+                {
+                    "finding_id": "A-1",
+                    "decision": "",
+                    "reasons": [],
+                }
+            ]
+        },
+    )
+    assert status_of(out) == REQUIRES_REVIEW
+
+
+def test_none_gate_decision_fails_safe_to_requires_review():
+    out = apply_gate(
+        legal(lf()),
+        {
+            "decisions": [
+                {
+                    "finding_id": "A-1",
+                    "decision": None,
+                    "reasons": [],
+                }
+            ]
+        },
+    )
+    assert status_of(out) == REQUIRES_REVIEW
+
+
+def test_invalid_duplicate_decision_is_worse_than_pass():
+    out = apply_gate(
+        legal(lf()),
+        {
+            "decisions": [
+                {
+                    "finding_id": "A-1",
+                    "decision": "pass",
+                    "reasons": [],
+                },
+                {
+                    "finding_id": "A-1",
+                    "decision": "invalid",
+                    "reasons": [],
+                },
+            ]
+        },
+    )
+    assert status_of(out) == REQUIRES_REVIEW

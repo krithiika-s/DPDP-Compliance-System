@@ -1,15 +1,14 @@
-"""Audit record (Phase A).
 
-Builds one JSON-friendly record of a finished assessment and writes it to
-disk, so a run can be checked later. Deterministic Python, no LLM.
+"""Audit record for a DPDP compliance assessment.
+
+Builds one JSON-friendly record of the assessment and writes it to disk.
+Deterministic Python, no LLM.
 
 Rules:
-- The record stores policy document NAMES and CHARACTER COUNTS only. The
-  policy text itself is never written.
-- It stores only what is in the AssessmentState plus the summary. Nothing
-  from .env, no keys.
-- A missing result stays None. It is never turned into an empty result.
-- A file is never overwritten. Writing the same record twice fails loudly.
+- Policy document names and character counts are recorded, never raw text.
+- All available pipeline results are preserved, including final stages.
+- Missing results stay None.
+- A file is never overwritten.
 """
 
 import json
@@ -36,7 +35,8 @@ def build_audit_record(
     *,
     created_at: datetime | None = None,
 ) -> dict[str, Any]:
-    """Return a plain dict that json.dumps can write."""
+    """Return a plain dictionary suitable for JSON serialization."""
+
     created = created_at or datetime.now(timezone.utc)
     request = state.request
 
@@ -51,28 +51,46 @@ def build_audit_record(
         "assessment_id": request.assessment_id,
         "project_path": request.project_path,
         "policy_documents": documents,
+
+        # Agent 1.
         "policy_claims": [
-            claim.model_dump(mode="json") for claim in state.policy_claims
+            claim.model_dump(mode="json")
+            for claim in state.policy_claims
         ],
         "rejected_claims": [
-            claim.model_dump(mode="json") for claim in state.rejected_claims
+            claim.model_dump(mode="json")
+            for claim in state.rejected_claims
         ],
+
+        # Agents 2 and 3.
         "implementation_report": state.implementation_report,
         "alignment_result": state.alignment_result,
         "evidence_gate": state.evidence_gate,
+
+        # Agent 4 and legal evidence gate.
+        "legal_analysis_original": state.legal_analysis_original,
+        "legal_analysis_gated": state.legal_analysis_gated,
+        "legal_gate_application": state.legal_gate_application,
+
+        # Deterministic scoring and Agent 5.
+        "compliance_score": state.compliance_score,
+        "compliance_report": state.compliance_report,
+
+        # Execution history and summary.
         "step_log": [
-            record.model_dump(mode="json") for record in state.step_log
+            record.model_dump(mode="json")
+            for record in state.step_log
         ],
         "summary": summary.model_dump(mode="json"),
     }
 
 
-def write_audit_record(record: dict[str, Any], directory: str | Path) -> Path:
-    """Write the record as a JSON file and return its path.
+def write_audit_record(
+    record: dict[str, Any],
+    directory: str | Path,
+) -> Path:
+    """Write an audit JSON file without overwriting an existing record."""
 
-    The folder is created if needed. If the file already exists the write
-    fails with FileExistsError instead of replacing it.
-    """
     folder = Path(directory)
     folder.mkdir(parents=True, exist_ok=True)
 
@@ -85,4 +103,5 @@ def write_audit_record(record: dict[str, Any], directory: str | Path) -> Path:
     with path.open("x", encoding="utf-8") as handle:
         json.dump(record, handle, indent=2, ensure_ascii=False)
         handle.write("\n")
+
     return path
