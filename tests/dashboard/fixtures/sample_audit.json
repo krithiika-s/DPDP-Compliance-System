@@ -1,0 +1,1123 @@
+{
+  "audit_version": 1,
+  "created_at": "2026-11-21T18:40:53.864279+00:00",
+  "assessment_id": "full-real-20261122-000842",
+  "project_path": "C:\\Users\\Krithika\\AppData\\Local\\Temp\\dpdp_streamlit_0w9w9hkc\\project\\sample_django_project",
+  "policy_documents": [
+    {
+      "name": "privacy_policy.txt",
+      "chars": 719
+    }
+  ],
+  "policy_claims": [
+    {
+      "claim": "Collects email address and display name upon registration.",
+      "category": "other",
+      "evidence": "We collect an email address and display name when a person registers.",
+      "source": "privacy_policy.txt"
+    },
+    {
+      "claim": "Uses account information to provide profile and account services.",
+      "category": "purpose_limitation",
+      "evidence": "We use account information to provide the profile and account service.",
+      "source": "privacy_policy.txt"
+    },
+    {
+      "claim": "Sends marketing emails only to users who have opted in.",
+      "category": "consent",
+      "evidence": "Marketing emails are sent only where the user has opted in.",
+      "source": "privacy_policy.txt"
+    },
+    {
+      "claim": "Allows users to request correction or deletion of account data.",
+      "category": "data_principal_rights",
+      "evidence": "Users may contact support to request correction or deletion of account data.",
+      "source": "privacy_policy.txt"
+    },
+    {
+      "claim": "Retains account information while the account remains active.",
+      "category": "storage_retention",
+      "evidence": "We retain account information while the account remains active.",
+      "source": "privacy_policy.txt"
+    },
+    {
+      "claim": "Employs reasonable security measures to protect account information.",
+      "category": "security_safeguards",
+      "evidence": "We use reasonable security measures to protect account information.",
+      "source": "privacy_policy.txt"
+    }
+  ],
+  "rejected_claims": [],
+  "implementation_report": {
+    "project_path": "C:\\Users\\Krithika\\AppData\\Local\\Temp\\dpdp_streamlit_0w9w9hkc\\project\\sample_django_project",
+    "files_scanned": 9,
+    "coverage": {
+      "model_field": 2,
+      "consent_logic": 1,
+      "form_input": 2,
+      "consent_ui": 1,
+      "data_write": 1
+    },
+    "evidence": [
+      {
+        "id": "E001",
+        "kind": "model_field",
+        "location": {
+          "file": "sample_app/models.py",
+          "line": 4
+        },
+        "snippet": "email = models.EmailField(unique=True)",
+        "detail": {
+          "model": "UserProfile",
+          "field": "email",
+          "field_type": "EmailField",
+          "options": {
+            "unique": "True"
+          }
+        }
+      },
+      {
+        "id": "E002",
+        "kind": "model_field",
+        "location": {
+          "file": "sample_app/models.py",
+          "line": 5
+        },
+        "snippet": "display_name = models.CharField(max_length=120)",
+        "detail": {
+          "model": "UserProfile",
+          "field": "display_name",
+          "field_type": "CharField",
+          "options": {
+            "max_length": "120"
+          }
+        }
+      },
+      {
+        "id": "E003",
+        "kind": "consent_logic",
+        "location": {
+          "file": "sample_app/models.py",
+          "line": 6
+        },
+        "snippet": "marketing_opt_in = models.BooleanField(default=False)",
+        "detail": {
+          "model": "UserProfile",
+          "field": "marketing_opt_in",
+          "field_type": "BooleanField",
+          "options": {
+            "default": "False"
+          }
+        }
+      },
+      {
+        "id": "E004",
+        "kind": "form_input",
+        "location": {
+          "file": "sample_app/templates/sample_app/register.html",
+          "line": 3
+        },
+        "snippet": "<input name=\"email\" type=\"email\">",
+        "detail": {
+          "name": "email"
+        }
+      },
+      {
+        "id": "E005",
+        "kind": "form_input",
+        "location": {
+          "file": "sample_app/templates/sample_app/register.html",
+          "line": 4
+        },
+        "snippet": "<input name=\"display_name\" type=\"text\">",
+        "detail": {
+          "name": "display_name"
+        }
+      },
+      {
+        "id": "E006",
+        "kind": "consent_ui",
+        "location": {
+          "file": "sample_app/templates/sample_app/register.html",
+          "line": 5
+        },
+        "snippet": "<label><input name=\"marketing_opt_in\" type=\"checkbox\"> Receive marketing emails</label>",
+        "detail": {
+          "input": "checkbox"
+        }
+      },
+      {
+        "id": "E007",
+        "kind": "data_write",
+        "location": {
+          "file": "sample_app/views.py",
+          "line": 4
+        },
+        "snippet": "def register(request):\n    if request.method == \"POST\":\n        email = request.POST.get(\"email\")\n        display_name = request.POST.get(\"display_name\")\n        marketing_opt_in = request.POST.get(\"marketing_opt_in\") == \"on\"\n        UserProfile.objects.create(\n            email=email,\n            d",
+        "detail": {
+          "function": "register",
+          "calls": [
+            "create"
+          ],
+          "fields": [
+            "email",
+            "display_name",
+            "marketing_opt_in"
+          ],
+          "references_consent": true,
+          "references_purpose": false
+        }
+      }
+    ],
+    "facts": [
+      {
+        "id": "F-TRANSPARENCY_NOTICE-01",
+        "category": "transparency_notice",
+        "statement": "The UserProfile model defines an email field of type EmailField with unique=True and a display_name field of type CharField with max_length=120.",
+        "fact_type": "present",
+        "evidence_ids": [
+          "E001",
+          "E002"
+        ],
+        "locations": [
+          {
+            "file": "sample_app/models.py",
+            "line": 4
+          },
+          {
+            "file": "sample_app/models.py",
+            "line": 5
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-TRANSPARENCY_NOTICE-02",
+        "category": "transparency_notice",
+        "statement": "The registration form includes input fields named email and display_name.",
+        "fact_type": "present",
+        "evidence_ids": [
+          "E004",
+          "E005"
+        ],
+        "locations": [
+          {
+            "file": "sample_app/templates/sample_app/register.html",
+            "line": 3
+          },
+          {
+            "file": "sample_app/templates/sample_app/register.html",
+            "line": 4
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-TRANSPARENCY_NOTICE-03",
+        "category": "transparency_notice",
+        "statement": "The registration form includes a checkbox input named marketing_opt_in labeled 'Receive marketing emails'.",
+        "fact_type": "present",
+        "evidence_ids": [
+          "E006"
+        ],
+        "locations": [
+          {
+            "file": "sample_app/templates/sample_app/register.html",
+            "line": 5
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-TRANSPARENCY_NOTICE-04",
+        "category": "transparency_notice",
+        "statement": "No privacy notice link is present in the code.",
+        "fact_type": "absent",
+        "evidence_ids": [],
+        "locations": [],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-TRANSPARENCY_NOTICE-05",
+        "category": "transparency_notice",
+        "statement": "No purpose text is present in the code.",
+        "fact_type": "absent",
+        "evidence_ids": [],
+        "locations": [],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-TRANSPARENCY_NOTICE-06",
+        "category": "transparency_notice",
+        "statement": "No code sends personal data to external services.",
+        "fact_type": "absent",
+        "evidence_ids": [],
+        "locations": [],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-CONSENT-01",
+        "category": "consent",
+        "statement": "The UserProfile model defines a BooleanField marketing_opt_in with default False.",
+        "fact_type": "present",
+        "evidence_ids": [
+          "E003"
+        ],
+        "locations": [
+          {
+            "file": "sample_app/models.py",
+            "line": 6
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-CONSENT-02",
+        "category": "consent",
+        "statement": "The registration template includes a checkbox input named marketing_opt_in labeled \"Receive marketing emails\".",
+        "fact_type": "present",
+        "evidence_ids": [
+          "E006"
+        ],
+        "locations": [
+          {
+            "file": "sample_app/templates/sample_app/register.html",
+            "line": 5
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-CONSENT-03",
+        "category": "consent",
+        "statement": "The register view creates a UserProfile record with email, display_name, and marketing_opt_in fields, referencing consent but not a purpose.",
+        "fact_type": "present",
+        "evidence_ids": [
+          "E007"
+        ],
+        "locations": [
+          {
+            "file": "sample_app/views.py",
+            "line": 4
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-PURPOSE_LIMITATION-01",
+        "category": "purpose_limitation",
+        "statement": "The register view writes the user's email, display_name, and marketing_opt_in to the UserProfile model, referencing user consent but not a purpose.",
+        "fact_type": "present",
+        "evidence_ids": [
+          "E007"
+        ],
+        "locations": [
+          {
+            "file": "sample_app/views.py",
+            "line": 4
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-PURPOSE_LIMITATION-02",
+        "category": "purpose_limitation",
+        "statement": "No code contains purpose markers.",
+        "fact_type": "absent",
+        "evidence_ids": [
+          "E007"
+        ],
+        "locations": [
+          {
+            "file": "sample_app/views.py",
+            "line": 4
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-PURPOSE_LIMITATION-03",
+        "category": "purpose_limitation",
+        "statement": "No code contains purpose text.",
+        "fact_type": "absent",
+        "evidence_ids": [
+          "E007"
+        ],
+        "locations": [
+          {
+            "file": "sample_app/views.py",
+            "line": 4
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-PURPOSE_LIMITATION-04",
+        "category": "purpose_limitation",
+        "statement": "No code sends personal data to external services.",
+        "fact_type": "absent",
+        "evidence_ids": [
+          "E007"
+        ],
+        "locations": [
+          {
+            "file": "sample_app/views.py",
+            "line": 4
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-PURPOSE_LIMITATION-05",
+        "category": "purpose_limitation",
+        "statement": "No code sends outbound emails.",
+        "fact_type": "absent",
+        "evidence_ids": [
+          "E007"
+        ],
+        "locations": [
+          {
+            "file": "sample_app/views.py",
+            "line": 4
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-PURPOSE_LIMITATION-06",
+        "category": "purpose_limitation",
+        "statement": "No code logs personal data.",
+        "fact_type": "absent",
+        "evidence_ids": [
+          "E007"
+        ],
+        "locations": [
+          {
+            "file": "sample_app/views.py",
+            "line": 4
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-DATA_MINIMIZATION-01",
+        "category": "data_minimization",
+        "statement": "The UserProfile model stores two personal data fields: email (unique EmailField) and display_name (CharField with max_length 120).",
+        "fact_type": "present",
+        "evidence_ids": [
+          "E001",
+          "E002"
+        ],
+        "locations": [
+          {
+            "file": "sample_app/models.py",
+            "line": 4
+          },
+          {
+            "file": "sample_app/models.py",
+            "line": 5
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-DATA_MINIMIZATION-02",
+        "category": "data_minimization",
+        "statement": "The registration form collects two personal data inputs: email (type email) and display_name (type text).",
+        "fact_type": "present",
+        "evidence_ids": [
+          "E004",
+          "E005"
+        ],
+        "locations": [
+          {
+            "file": "sample_app/templates/sample_app/register.html",
+            "line": 3
+          },
+          {
+            "file": "sample_app/templates/sample_app/register.html",
+            "line": 4
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-STORAGE_RETENTION-01",
+        "category": "storage_retention",
+        "statement": "No code implements retention logic for personal data.",
+        "fact_type": "absent",
+        "evidence_ids": [],
+        "locations": [],
+        "confidence": 1.0
+      }
+    ],
+    "llm_retries": 0,
+    "llm_failures": 0,
+    "failed_categories": []
+  },
+  "alignment_result": {
+    "findings": [
+      {
+        "id": "A-001",
+        "kind": "claim_check",
+        "category": "other",
+        "status": "out_of_scope",
+        "reason_code": "out_of_scope",
+        "claim": {
+          "claim": "Collects email address and display name upon registration.",
+          "category": "other",
+          "evidence": "We collect an email address and display name when a person registers.",
+          "source": "privacy_policy.txt"
+        },
+        "claim_id": "pc_101bd8dc3b7b",
+        "fact_ids": [],
+        "evidence_ids": [],
+        "code_locations": [],
+        "reasoning": "Category is outside the five principles evaluated by this framework.",
+        "confidence": 0.5
+      },
+      {
+        "id": "A-002",
+        "kind": "claim_check",
+        "category": "data_principal_rights",
+        "status": "out_of_scope",
+        "reason_code": "out_of_scope",
+        "claim": {
+          "claim": "Allows users to request correction or deletion of account data.",
+          "category": "data_principal_rights",
+          "evidence": "Users may contact support to request correction or deletion of account data.",
+          "source": "privacy_policy.txt"
+        },
+        "claim_id": "pc_5aa77d1b5d36",
+        "fact_ids": [],
+        "evidence_ids": [],
+        "code_locations": [],
+        "reasoning": "Category is outside the five principles evaluated by this framework.",
+        "confidence": 0.5
+      },
+      {
+        "id": "A-003",
+        "kind": "claim_check",
+        "category": "security_safeguards",
+        "status": "out_of_scope",
+        "reason_code": "out_of_scope",
+        "claim": {
+          "claim": "Employs reasonable security measures to protect account information.",
+          "category": "security_safeguards",
+          "evidence": "We use reasonable security measures to protect account information.",
+          "source": "privacy_policy.txt"
+        },
+        "claim_id": "pc_ec97be6e67e3",
+        "fact_ids": [],
+        "evidence_ids": [],
+        "code_locations": [],
+        "reasoning": "Category is outside the five principles evaluated by this framework.",
+        "confidence": 0.5
+      },
+      {
+        "id": "A-004",
+        "kind": "claim_check",
+        "category": "consent",
+        "status": "unverifiable",
+        "reason_code": "evidence_gap",
+        "claim": {
+          "claim": "Sends marketing emails only to users who have opted in.",
+          "category": "consent",
+          "evidence": "Marketing emails are sent only where the user has opted in.",
+          "source": "privacy_policy.txt"
+        },
+        "claim_id": "pc_adf4a955bdd6",
+        "fact_ids": [],
+        "evidence_ids": [],
+        "code_locations": [],
+        "reasoning": "The facts describe the presence of a marketing_opt_in field and its capture during registration, but there is no evidence that the code checks this flag before sending marketing emails. Therefore the claim cannot be verified.",
+        "confidence": 0.5
+      },
+      {
+        "id": "A-005",
+        "kind": "claim_check",
+        "category": "purpose_limitation",
+        "status": "aligned",
+        "reason_code": "model_assessed",
+        "claim": {
+          "claim": "Uses account information to provide profile and account services.",
+          "category": "purpose_limitation",
+          "evidence": "We use account information to provide the profile and account service.",
+          "source": "privacy_policy.txt"
+        },
+        "claim_id": "pc_c3360c6724a7",
+        "fact_ids": [
+          "F-PURPOSE_LIMITATION-01"
+        ],
+        "evidence_ids": [
+          "E007"
+        ],
+        "code_locations": [
+          {
+            "file": "sample_app/views.py",
+            "line": 4
+          }
+        ],
+        "reasoning": "The code writes the user's email, display_name, and marketing_opt_in to the UserProfile model, which is used to provide profile and account services, matching the claim.",
+        "confidence": 0.95
+      },
+      {
+        "id": "A-006",
+        "kind": "claim_check",
+        "category": "storage_retention",
+        "status": "violated",
+        "reason_code": "model_assessed",
+        "claim": {
+          "claim": "Retains account information while the account remains active.",
+          "category": "storage_retention",
+          "evidence": "We retain account information while the account remains active.",
+          "source": "privacy_policy.txt"
+        },
+        "claim_id": "pc_c07963ac7a93",
+        "fact_ids": [
+          "F-STORAGE_RETENTION-01"
+        ],
+        "evidence_ids": [],
+        "code_locations": [],
+        "reasoning": "The claim states that account information is retained while the account remains active, but the fact indicates that no code implements retention logic for personal data, meaning the code does not retain account information as claimed.",
+        "confidence": 0.9
+      }
+    ],
+    "summary": {
+      "out_of_scope": 3,
+      "unverifiable": 1,
+      "aligned": 1,
+      "violated": 1
+    },
+    "llm_retries": 2,
+    "llm_failures": 0,
+    "failed_calls": [],
+    "unknown_verdict_ids": [],
+    "policy_text_chars": 755,
+    "policy_text_truncated": false
+  },
+  "evidence_gate": {
+    "decisions": [
+      {
+        "finding_id": "A-001",
+        "decision": "not_gated",
+        "reasons": []
+      },
+      {
+        "finding_id": "A-002",
+        "decision": "not_gated",
+        "reasons": []
+      },
+      {
+        "finding_id": "A-003",
+        "decision": "not_gated",
+        "reasons": []
+      },
+      {
+        "finding_id": "A-004",
+        "decision": "not_gated",
+        "reasons": []
+      },
+      {
+        "finding_id": "A-005",
+        "decision": "not_gated",
+        "reasons": []
+      },
+      {
+        "finding_id": "A-006",
+        "decision": "review_only",
+        "reasons": [
+          "Every cited fact is an absence: the scan did not find something, which is not proof it does not exist."
+        ]
+      }
+    ],
+    "warnings": [],
+    "counts": {
+      "not_gated": 5,
+      "review_only": 1
+    }
+  },
+  "legal_analysis_original": {
+    "findings": [
+      {
+        "alignment_finding_id": "A-001",
+        "status": "not_applicable",
+        "applicable_provisions": [],
+        "legal_reasoning": "This finding is outside the project's defined assessment scope.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "No legal conclusion was attempted for this finding."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-002",
+        "status": "not_applicable",
+        "applicable_provisions": [],
+        "legal_reasoning": "This finding is outside the project's defined assessment scope.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "No legal conclusion was attempted for this finding."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-003",
+        "status": "not_applicable",
+        "applicable_provisions": [],
+        "legal_reasoning": "This finding is outside the project's defined assessment scope.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "No legal conclusion was attempted for this finding."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-004",
+        "status": "insufficient_evidence",
+        "applicable_provisions": [],
+        "legal_reasoning": "Agent 3 status 'unverifiable' does not support a legal assessment.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "No legal LLM assessment was attempted for this finding."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-005",
+        "status": "insufficient_evidence",
+        "applicable_provisions": [
+          "Section 5(1) DPDP Act, 2023"
+        ],
+        "legal_reasoning": "The DPDP Act requires that any request for consent to process personal data be accompanied by a notice that includes the purpose of the processing (Section 5(1)). The evidence supplied (E007) shows that the register view writes the user’s email, display name and marketing opt‑in to the UserProfile model and references consent, but it does not demonstrate that the user was informed of the specific purpose (i.e., providing profile and account services) at the time of consent. Therefore, the evidence does not establish compliance with the purpose‑limitation requirement as mandated by the Act.",
+        "evidence_fact_ids": [
+          "F-PURPOSE_LIMITATION-01"
+        ],
+        "citations": [
+          {
+            "source_id": "LEGAL-7aa93f2c0f0853ca",
+            "provision": "Section 5: (1) Every request made to a Data Principal under section 6 for consent shall be",
+            "document_type": "DPDP Act, 2023",
+            "source_file": "2bf1f0e9f04e6fb4f8fef35e82c42aa5.pdf",
+            "pdf_page": 4,
+            "excerpt": "5. (1) Every request made to a Data Principal under section 6 for consent shall be accompanied or preceded by a notice given by the Data Fiduciary to the Data Principal, informing her,— (i) the personal data and the purpose for which the same is proposed to be processed;"
+          }
+        ],
+        "confidence": 0.6,
+        "limitations": [
+          "Evidence does not confirm that the user was notified of the specific purpose of processing at the time of consent."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-006",
+        "status": "requires_review",
+        "applicable_provisions": [],
+        "legal_reasoning": "The linked implementation facts report absence only, but the scan contract does not establish complete coverage.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "Absence-only evidence is insufficient to establish a legal breach or compliance. Human review and additional verification are required."
+        ]
+      }
+    ],
+    "summary": {
+      "potential_non_compliance": 0,
+      "potential_compliance": 0,
+      "insufficient_evidence": 2,
+      "not_applicable": 3,
+      "requires_review": 1
+    },
+    "sources_consulted": [
+      "2bf1f0e9f04e6fb4f8fef35e82c42aa5.pdf"
+    ],
+    "failed_calls": [],
+    "retrieval_failures": []
+  },
+  "legal_analysis_gated": {
+    "findings": [
+      {
+        "alignment_finding_id": "A-001",
+        "status": "not_applicable",
+        "applicable_provisions": [],
+        "legal_reasoning": "This finding is outside the project's defined assessment scope.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "No legal conclusion was attempted for this finding."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-002",
+        "status": "not_applicable",
+        "applicable_provisions": [],
+        "legal_reasoning": "This finding is outside the project's defined assessment scope.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "No legal conclusion was attempted for this finding."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-003",
+        "status": "not_applicable",
+        "applicable_provisions": [],
+        "legal_reasoning": "This finding is outside the project's defined assessment scope.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "No legal conclusion was attempted for this finding."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-004",
+        "status": "insufficient_evidence",
+        "applicable_provisions": [],
+        "legal_reasoning": "Agent 3 status 'unverifiable' does not support a legal assessment.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "No legal LLM assessment was attempted for this finding."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-005",
+        "status": "insufficient_evidence",
+        "applicable_provisions": [
+          "Section 5(1) DPDP Act, 2023"
+        ],
+        "legal_reasoning": "The DPDP Act requires that any request for consent to process personal data be accompanied by a notice that includes the purpose of the processing (Section 5(1)). The evidence supplied (E007) shows that the register view writes the user’s email, display name and marketing opt‑in to the UserProfile model and references consent, but it does not demonstrate that the user was informed of the specific purpose (i.e., providing profile and account services) at the time of consent. Therefore, the evidence does not establish compliance with the purpose‑limitation requirement as mandated by the Act.",
+        "evidence_fact_ids": [
+          "F-PURPOSE_LIMITATION-01"
+        ],
+        "citations": [
+          {
+            "source_id": "LEGAL-7aa93f2c0f0853ca",
+            "provision": "Section 5: (1) Every request made to a Data Principal under section 6 for consent shall be",
+            "document_type": "DPDP Act, 2023",
+            "source_file": "2bf1f0e9f04e6fb4f8fef35e82c42aa5.pdf",
+            "pdf_page": 4,
+            "excerpt": "5. (1) Every request made to a Data Principal under section 6 for consent shall be accompanied or preceded by a notice given by the Data Fiduciary to the Data Principal, informing her,— (i) the personal data and the purpose for which the same is proposed to be processed;"
+          }
+        ],
+        "confidence": 0.6,
+        "limitations": [
+          "Evidence does not confirm that the user was notified of the specific purpose of processing at the time of consent."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-006",
+        "status": "requires_review",
+        "applicable_provisions": [],
+        "legal_reasoning": "The linked implementation facts report absence only, but the scan contract does not establish complete coverage.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "Absence-only evidence is insufficient to establish a legal breach or compliance. Human review and additional verification are required.",
+          "Evidence gate: Every cited fact is an absence: the scan did not find something, which is not proof it does not exist."
+        ]
+      }
+    ],
+    "summary": {
+      "potential_non_compliance": 0,
+      "potential_compliance": 0,
+      "insufficient_evidence": 2,
+      "not_applicable": 3,
+      "requires_review": 1
+    },
+    "sources_consulted": [
+      "2bf1f0e9f04e6fb4f8fef35e82c42aa5.pdf"
+    ],
+    "failed_calls": [],
+    "retrieval_failures": []
+  },
+  "legal_gate_application": {
+    "changes": []
+  },
+  "compliance_score": {
+    "score": null,
+    "total_findings": 6,
+    "assessed_findings": 0,
+    "potential_compliance_count": 0,
+    "potential_non_compliance_count": 0,
+    "insufficient_evidence_count": 2,
+    "requires_review_count": 1,
+    "not_applicable_count": 3,
+    "assessment_coverage_percent": 0.0,
+    "minimum_coverage_percent": 50.0,
+    "score_withheld_reason": "No findings have a legally assessable outcome.",
+    "score_description": "This is a provisional ratio of potential-compliance findings to legally assessed findings only. It is not an overall DPDP compliance percentage, legal certification, or legal advice. Insufficient-evidence, requires-review, and not-applicable findings are excluded from the score."
+  },
+  "compliance_report": {
+    "assessment_id": "full-real-20261122-000842",
+    "score": {
+      "score": null,
+      "total_findings": 6,
+      "assessed_findings": 0,
+      "potential_compliance_count": 0,
+      "potential_non_compliance_count": 0,
+      "insufficient_evidence_count": 2,
+      "requires_review_count": 1,
+      "not_applicable_count": 3,
+      "assessment_coverage_percent": 0.0,
+      "minimum_coverage_percent": 50.0,
+      "score_withheld_reason": "No findings have a legally assessable outcome.",
+      "score_description": "This is a provisional ratio of potential-compliance findings to legally assessed findings only. It is not an overall DPDP compliance percentage, legal certification, or legal advice. Insufficient-evidence, requires-review, and not-applicable findings are excluded from the score."
+    },
+    "findings": [
+      {
+        "alignment_finding_id": "A-001",
+        "status": "not_applicable",
+        "applicable_provisions": [],
+        "legal_reasoning": "This finding is outside the project's defined assessment scope.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "No legal conclusion was attempted for this finding."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-002",
+        "status": "not_applicable",
+        "applicable_provisions": [],
+        "legal_reasoning": "This finding is outside the project's defined assessment scope.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "No legal conclusion was attempted for this finding."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-003",
+        "status": "not_applicable",
+        "applicable_provisions": [],
+        "legal_reasoning": "This finding is outside the project's defined assessment scope.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "No legal conclusion was attempted for this finding."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-004",
+        "status": "insufficient_evidence",
+        "applicable_provisions": [],
+        "legal_reasoning": "Agent 3 status 'unverifiable' does not support a legal assessment.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "No legal LLM assessment was attempted for this finding."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-005",
+        "status": "insufficient_evidence",
+        "applicable_provisions": [
+          "Section 5(1) DPDP Act, 2023"
+        ],
+        "legal_reasoning": "The DPDP Act requires that any request for consent to process personal data be accompanied by a notice that includes the purpose of the processing (Section 5(1)). The evidence supplied (E007) shows that the register view writes the user’s email, display name and marketing opt‑in to the UserProfile model and references consent, but it does not demonstrate that the user was informed of the specific purpose (i.e., providing profile and account services) at the time of consent. Therefore, the evidence does not establish compliance with the purpose‑limitation requirement as mandated by the Act.",
+        "evidence_fact_ids": [
+          "F-PURPOSE_LIMITATION-01"
+        ],
+        "citations": [
+          {
+            "source_id": "LEGAL-7aa93f2c0f0853ca",
+            "provision": "Section 5: (1) Every request made to a Data Principal under section 6 for consent shall be",
+            "document_type": "DPDP Act, 2023",
+            "source_file": "2bf1f0e9f04e6fb4f8fef35e82c42aa5.pdf",
+            "pdf_page": 4,
+            "excerpt": "5. (1) Every request made to a Data Principal under section 6 for consent shall be accompanied or preceded by a notice given by the Data Fiduciary to the Data Principal, informing her,— (i) the personal data and the purpose for which the same is proposed to be processed;"
+          }
+        ],
+        "confidence": 0.6,
+        "limitations": [
+          "Evidence does not confirm that the user was notified of the specific purpose of processing at the time of consent."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-006",
+        "status": "requires_review",
+        "applicable_provisions": [],
+        "legal_reasoning": "The linked implementation facts report absence only, but the scan contract does not establish complete coverage.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "Absence-only evidence is insufficient to establish a legal breach or compliance. Human review and additional verification are required.",
+          "Evidence gate: Every cited fact is an absence: the scan did not find something, which is not proof it does not exist."
+        ]
+      }
+    ],
+    "recommendations": [
+      {
+        "finding_id": "A-004",
+        "priority": "medium",
+        "action": "Collect additional implementation evidence and repeat the assessment.",
+        "reason": "Agent 3 status 'unverifiable' does not support a legal assessment."
+      },
+      {
+        "finding_id": "A-005",
+        "priority": "medium",
+        "action": "Collect additional implementation evidence and repeat the assessment.",
+        "reason": "The DPDP Act requires that any request for consent to process personal data be accompanied by a notice that includes the purpose of the processing (Section 5(1)). The evidence supplied (E007) shows that the register view writes the user’s email, display name and marketing opt‑in to the UserProfile model and references consent, but it does not demonstrate that the user was informed of the specific purpose (i.e., providing profile and account services) at the time of consent. Therefore, the evidence does not establish compliance with the purpose‑limitation requirement as mandated by the Act."
+      },
+      {
+        "finding_id": "A-006",
+        "priority": "high",
+        "action": "Refer this finding for qualified legal or compliance review.",
+        "reason": "The linked implementation facts report absence only, but the scan contract does not establish complete coverage."
+      }
+    ],
+    "sources_consulted": [
+      "2bf1f0e9f04e6fb4f8fef35e82c42aa5.pdf"
+    ],
+    "executive_summary": "The provisional score was withheld. Reason: No findings have a legally assessable outcome. Assessment coverage: 0.00%. 0 findings were legally assessed; 1 require review and 2 have insufficient evidence. Recorded failures: 0 failed LLM calls and 0 retrieval failures.",
+    "disclaimer": "This report is an automated informational assessment, not legal advice or a legal certification. Its provisional score is not an overall DPDP compliance percentage. Findings and source citations should be reviewed by qualified personnel.",
+    "failed_calls": [],
+    "retrieval_failures": []
+  },
+  "step_log": [
+    {
+      "step": "agent1_policy_extraction",
+      "target": "privacy_policy.txt",
+      "status": "retrying",
+      "attempt": 1,
+      "message": "OutputParserException: Unknown tool type: 'functions.PolicyExtractionResult'. Available tools: PolicyExtractionResult\nFor troubleshooting, visit: https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE ",
+      "timestamp": "2026-11-21T18:38:44.470296Z"
+    },
+    {
+      "step": "agent1_policy_extraction",
+      "target": "privacy_policy.txt",
+      "status": "retrying",
+      "attempt": 2,
+      "message": "OutputParserException: Unknown tool type: 'functions.PolicyExtractionResult'. Available tools: PolicyExtractionResult\nFor troubleshooting, visit: https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE ",
+      "timestamp": "2026-11-21T18:38:45.728311Z"
+    },
+    {
+      "step": "agent1_policy_extraction",
+      "target": "privacy_policy.txt",
+      "status": "completed",
+      "attempt": 3,
+      "message": "6 verified, 0 rejected",
+      "timestamp": "2026-11-21T18:38:47.249630Z"
+    },
+    {
+      "step": "agent2_implementation_analysis",
+      "target": "C:\\Users\\Krithika\\AppData\\Local\\Temp\\dpdp_streamlit_0w9w9hkc\\project\\sample_django_project",
+      "status": "retrying",
+      "attempt": 1,
+      "message": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01m4wwpe9pemvbqbp4nnaytwmj` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 6983, Requested 1749. Please try again in 5.49s. Need more tokens? Upgrade to Dev Tier tod",
+      "timestamp": "2026-11-21T18:38:53.628393Z"
+    },
+    {
+      "step": "agent2_implementation_analysis",
+      "target": "C:\\Users\\Krithika\\AppData\\Local\\Temp\\dpdp_streamlit_0w9w9hkc\\project\\sample_django_project",
+      "status": "completed",
+      "attempt": 2,
+      "message": "18 facts",
+      "timestamp": "2026-11-21T18:39:45.694146Z"
+    },
+    {
+      "step": "agent3_alignment",
+      "target": "",
+      "status": "completed",
+      "attempt": 1,
+      "message": "",
+      "timestamp": "2026-11-21T18:40:38.016264Z"
+    },
+    {
+      "step": "evidence_gate",
+      "target": "",
+      "status": "completed",
+      "attempt": 1,
+      "message": "",
+      "timestamp": "2026-11-21T18:40:38.016436Z"
+    },
+    {
+      "step": "legal_analysis",
+      "target": "",
+      "status": "completed",
+      "attempt": 1,
+      "message": "",
+      "timestamp": "2026-11-21T18:40:53.862945Z"
+    },
+    {
+      "step": "legal_gate",
+      "target": "",
+      "status": "completed",
+      "attempt": 1,
+      "message": "",
+      "timestamp": "2026-11-21T18:40:53.863391Z"
+    },
+    {
+      "step": "compliance_scoring",
+      "target": "",
+      "status": "completed",
+      "attempt": 1,
+      "message": "",
+      "timestamp": "2026-11-21T18:40:53.863509Z"
+    },
+    {
+      "step": "report_generation",
+      "target": "",
+      "status": "completed",
+      "attempt": 1,
+      "message": "",
+      "timestamp": "2026-11-21T18:40:53.863727Z"
+    }
+  ],
+  "summary": {
+    "assessment_id": "full-real-20261122-000842",
+    "outcome_counts": {
+      "compliant": 1,
+      "gap": 1,
+      "insufficient_evidence": 1,
+      "not_assessed": 3
+    },
+    "insufficient_by_reason": {
+      "evidence_gap": 1
+    },
+    "decided_percent": 66.7,
+    "policy_text_chars": 755,
+    "policy_text_truncated": false,
+    "implementation_llm_failures": 0,
+    "alignment_llm_failures": 0,
+    "alignment_failed_calls": [],
+    "alignment_unknown_verdict_ids": [],
+    "documents_without_claims": [],
+    "gate_counts": {
+      "not_gated": 5,
+      "review_only": 1
+    },
+    "gate_warnings": [],
+    "legal_status_counts": {
+      "not_applicable": 3,
+      "insufficient_evidence": 2,
+      "requires_review": 1
+    },
+    "legal_failed_llm_calls": 0,
+    "legal_retrieval_failures": 0,
+    "legal_gate_changes": 0,
+    "compliance_score_available": false,
+    "compliance_score": null,
+    "score_withheld_reason": "No findings have a legally assessable outcome.",
+    "report_generated": true,
+    "failed_steps": [],
+    "warnings": [],
+    "incomplete_reasons": [],
+    "is_complete": true
+  }
+}
