@@ -1,15 +1,10 @@
-"""Data models for the central orchestrator (Phase A, step 1).
+
+"""Data models for the central orchestrator.
 
 These are validated containers, not agents. They describe:
   1. what the user submits (AssessmentRequest),
   2. everything known about one assessment run (AssessmentState),
   3. an audit log of what the orchestrator did (StepRecord).
-
-Agent 1's real output (PolicyClaim) is included. The results of Agents 2
-and 3 are kept as plain dictionaries for now, so we do not import code
-that is not in main yet. Fields for the other agents are added later,
-once their output formats are agreed with their owners. Nothing is
-guessed here.
 """
 
 from datetime import datetime, timezone
@@ -30,8 +25,8 @@ class PolicyDocument(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    name: str = Field(min_length=1)  # e.g. "privacy_policy.txt"
-    text: str = Field(min_length=1)  # the full document text
+    name: str = Field(min_length=1)
+    text: str = Field(min_length=1)
 
 
 class AssessmentRequest(BaseModel):
@@ -41,7 +36,6 @@ class AssessmentRequest(BaseModel):
 
     assessment_id: str = Field(min_length=1)
     policy_documents: list[PolicyDocument] = Field(min_length=1)
-    # Folder of the code project for Agent 2. None means no code analysis.
     project_path: str | None = None
 
     @field_validator("policy_documents")
@@ -49,8 +43,6 @@ class AssessmentRequest(BaseModel):
     def _names_must_be_unique(
         cls, documents: list[PolicyDocument]
     ) -> list[PolicyDocument]:
-        # A document's name becomes the "source" of its claims, so two
-        # documents with the same name would make evidence ambiguous.
         names = [doc.name for doc in documents]
         if len(names) != len(set(names)):
             raise ValueError("Policy document names must be unique.")
@@ -68,11 +60,11 @@ class StepRecord(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    step: str                       # e.g. "agent1_policy_extraction"
-    target: str = ""                # e.g. the document name being processed
+    step: str
+    target: str = ""
     status: StepStatus
     attempt: int = Field(default=1, ge=1)
-    message: str = ""               # e.g. the error text for a failure
+    message: str = ""
     timestamp: datetime = Field(default_factory=_now)
 
 
@@ -82,17 +74,34 @@ class AssessmentState(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     request: AssessmentRequest
+
     policy_claims: list[PolicyClaim] = Field(default_factory=list)
     rejected_claims: list[PolicyClaim] = Field(default_factory=list)
-    # Agent 2's report as a plain dict (report.model_dump(mode="json")).
-    # None means the implementation step has not produced a report.
+
+    # Agent 2's report as a plain dict (model_dump(mode="json")).
     implementation_report: dict[str, Any] | None = None
-    # Agent 3's result as a plain dict (result.model_dump(mode="json")).
-    # None means the alignment step has not produced a result.
+
+    # Agent 3's result as a plain dict (model_dump(mode="json")).
     alignment_result: dict[str, Any] | None = None
-        # The evidence gate's decisions (GateResult.to_dict()).
-    # None means the gate did not run or crashed.
+
+    # Evidence gate decisions (GateResult.to_dict()).
     evidence_gate: dict[str, Any] | None = None
+
+    # Agent 4's original legal result, before the legal gate.
+    legal_analysis_original: dict[str, Any] | None = None
+
+    # Agent 4's legal result after evidence-gate safeguards.
+    legal_analysis_gated: dict[str, Any] | None = None
+
+    # Status changes made by the legal gate.
+    legal_gate_application: dict[str, Any] | None = None
+
+    # Agent 4's gated result scored by the deterministic scoring engine.
+    compliance_score: dict[str, Any] | None = None
+
+    # Agent 5's structured final report.
+    compliance_report: dict[str, Any] | None = None
+
     step_log: list[StepRecord] = Field(default_factory=list)
 
     def log(
