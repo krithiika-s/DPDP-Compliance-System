@@ -1,33 +1,33 @@
-"""Assessment summary (Phase A).
 
-Reads a finished AssessmentState and answers: what was decided, what was not,
-and did anything fail? This is deterministic Python. No LLM is involved.
+"""Assessment summary for the complete DPDP pipeline.
 
-Purpose: a result with many "insufficient evidence" findings, or with a failed
-step, must never look like strong compliance. The summary reports how much was
-actually decided and lists every failure it can see.
+Reads a finished AssessmentState and reports what was decided, what was
+not assessed, and which stages failed. All calculations are deterministic.
+No LLM is involved.
 
-Rules:
-- Failures are read from structured data (llm_failures, failed_calls,
-  reason_code, step names and step statuses), never by searching message
-  text. Messages are copied only so that a person can read them.
-- A missing result is "not assessed", never zero counts that look clean.
-- "is_complete" means every step ran and no failure was hidden. It does NOT
-  say how much was decided. Read decided_percent for that.
+A run that does not start the final stages retains the original Phase A
+summary behavior. Once final-stage execution starts, its outputs and
+failures are included in the completeness assessment.
 """
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
-from orchestrator.alignment_stage import STEP_NAME as ALIGNMENT_STEP  # noqa: F401
+from orchestrator.alignment_stage import STEP_NAME as ALIGNMENT_STEP
 from orchestrator.analysis_stage import WARNING_STEP
-from orchestrator.implementation_stage import STEP_NAME as IMPLEMENTATION_STEP  # noqa: F401
+from orchestrator.implementation_stage import STEP_NAME as IMPLEMENTATION_STEP
 from orchestrator.models import AssessmentState, StepStatus
 from orchestrator.policy_stage import STEP_NAME as POLICY_STEP
 from orchestrator.sufficiency import Outcome, count_outcomes, outcome_for_status
 
-# Agent 3 reason codes that mean the MODEL failed (a retry may help).
 MODEL_PROBLEM_CODES = ("model_failure", "invalid_model_output")
 MESSAGE_LIMIT = 200
+
+FINAL_STEPS = {
+    "legal_analysis",
+    "legal_gate",
+    "compliance_scoring",
+    "report_generation",
+}
 
 
 class StepIssue(BaseModel):
@@ -45,26 +45,38 @@ class AssessmentSummary(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     assessment_id: str
-    # None means Agent 3 produced no result: not assessed, not "zero findings".
+
+    # Agent 3 assessment.
     outcome_counts: dict[str, int] | None = None
-    # Why findings ended as insufficient evidence: reason_code -> count.
-    insufficient_by_reason: dict[str, int] = {}
-    # Share of in-scope findings that are compliant or gap. None if no data.
+    insufficient_by_reason: dict[str, int] = Field(default_factory=dict)
     decided_percent: float | None = None
     policy_text_chars: int | None = None
     policy_text_truncated: bool | None = None
     implementation_llm_failures: int | None = None
     alignment_llm_failures: int | None = None
-    alignment_failed_calls: list[str] = []
-    alignment_unknown_verdict_ids: list[str] = []
-    documents_without_claims: list[str] = []
-    failed_steps: list[StepIssue] = []
-    warnings: list[str] = []
-    # Evidence gate decisions by kind (blocked, review_only, pass, not_gated).
-    # None means the gate produced no result.
+    alignment_failed_calls: list[str] = Field(default_factory=list)
+    alignment_unknown_verdict_ids: list[str] = Field(default_factory=list)
+    documents_without_claims: list[str] = Field(default_factory=list)
+
+    # Evidence gate for Agent 3 findings.
     gate_counts: dict[str, int] | None = None
-    gate_warnings: list[str] = []
-    incomplete_reasons: list[str] = []
+    gate_warnings: list[str] = Field(default_factory=list)
+
+    # Final legal assessment.
+    legal_status_counts: dict[str, int] | None = None
+    legal_failed_llm_calls: int | None = None
+    legal_retrieval_failures: int | None = None
+    legal_gate_changes: int | None = None
+
+    # Scoring and report.
+    compliance_score_available: bool | None = None
+    compliance_score: float | None = None
+    score_withheld_reason: str | None = None
+    report_generated: bool | None = None
+
+    failed_steps: list[StepIssue] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    incomplete_reasons: list[str] = Field(default_factory=list)
     is_complete: bool = False
 
 
@@ -73,17 +85,17 @@ def _short(text: str, limit: int = MESSAGE_LIMIT) -> str:
 
 
 def _failed_steps(state: AssessmentState) -> list[StepIssue]:
-    """Steps whose LAST log entry is not COMPLETED.
+    """Return steps whose last log entry is not COMPLETED."""
 
-    Agent 1 runs once per document, so it is keyed by document name. Agents 2
-    and 3 run once per assessment, so they are keyed by step name only.
-    """
     last = {}
+
     for record in state.step_log:
         if record.step == WARNING_STEP:
             continue
+
         target = record.target if record.step == POLICY_STEP else ""
         last[(record.step, target)] = record
+
     return [
         StepIssue(
             step=record.step,
@@ -97,23 +109,49 @@ def _failed_steps(state: AssessmentState) -> list[StepIssue]:
 
 
 def _documents_without_claims(state: AssessmentState) -> list[str]:
-    done = {
+    completed = {
         record.target
         for record in state.step_log
-        if record.step == POLICY_STEP and record.status == StepStatus.COMPLETED
+        if record.step == POLICY_STEP
+        and record.status == StepStatus.COMPLETED
     }
+
     return [
         document.name
         for document in state.request.policy_documents
-        if document.name not in done
+        if document.name not in completed
     ]
 
 
+def _final_stage_started(state: AssessmentState) -> bool:
+    """Determine whether the final stages were attempted."""
+
+    if any(record.step in FINAL_STEPS for record in state.step_log):
+        return True
+
+    return any(
+        value is not None
+        for value in (
+            state.legal_analysis_original,
+            state.legal_analysis_gated,
+            state.legal_gate_application,
+            state.compliance_score,
+            state.compliance_report,
+        )
+    )
+
+
 def summarize_assessment(state: AssessmentState) -> AssessmentSummary:
-    """Summarise what was decided, what was not, and what failed."""
+    """Summarise the complete assessment without hiding missing results."""
+
     failed_steps = _failed_steps(state)
     missing_documents = _documents_without_claims(state)
-    warnings = [r.message for r in state.step_log if r.step == WARNING_STEP]
+    warnings = [
+        record.message
+        for record in state.step_log
+        if record.step == WARNING_STEP
+    ]
+
     reasons: list[str] = []
 
     if failed_steps:
@@ -121,23 +159,35 @@ def summarize_assessment(state: AssessmentState) -> AssessmentSummary:
             issue.step + (f" ({issue.target})" if issue.target else "")
             for issue in failed_steps
         )
-        reasons.append(f"{len(failed_steps)} step(s) did not complete: {names}.")
+        reasons.append(
+            f"{len(failed_steps)} step(s) did not complete: {names}."
+        )
+
     if missing_documents:
         reasons.append(
             "No claims were extracted from: "
             + ", ".join(missing_documents)
             + ". Their claims were not checked."
         )
-    if warnings:
-        reasons.append(f"{len(warnings)} analysis warning(s) were logged; see warnings.")
 
-    # Agent 2
+    if warnings:
+        reasons.append(
+            f"{len(warnings)} analysis warning(s) were logged; see warnings."
+        )
+
+    # Agent 2.
     implementation = state.implementation_report
     implementation_failures = None
+
     if implementation is None:
-        reasons.append("Agent 2 produced no report, so the code was not analysed.")
+        reasons.append(
+            "Agent 2 produced no report, so the code was not analysed."
+        )
     else:
-        implementation_failures = int(implementation.get("llm_failures", 0))
+        implementation_failures = int(
+            implementation.get("llm_failures", 0)
+        )
+
         if implementation_failures > 0:
             reasons.append(
                 f"Agent 2 gave up on {implementation_failures} model call(s). "
@@ -145,7 +195,7 @@ def summarize_assessment(state: AssessmentState) -> AssessmentSummary:
                 "nothing there."
             )
 
-    # Agent 3
+    # Agent 3.
     alignment = state.alignment_result
     outcome_counts = None
     insufficient_by_reason: dict[str, int] = {}
@@ -157,70 +207,187 @@ def summarize_assessment(state: AssessmentState) -> AssessmentSummary:
     unknown_verdict_ids: list[str] = []
 
     if alignment is None:
-        reasons.append("Agent 3 produced no result, so nothing was assessed.")
+        reasons.append(
+            "Agent 3 produced no result, so nothing was assessed."
+        )
     else:
         findings = alignment.get("findings", [])
-        counts = count_outcomes(f.get("status", "") for f in findings)
-        outcome_counts = {outcome.value: n for outcome, n in counts.items()}
+        counts = count_outcomes(
+            finding.get("status", "") for finding in findings
+        )
 
-        for f in findings:
-            if outcome_for_status(f.get("status", "")) == Outcome.INSUFFICIENT_EVIDENCE:
-                code = f.get("reason_code", "unknown")
-                insufficient_by_reason[code] = insufficient_by_reason.get(code, 0) + 1
+        outcome_counts = {
+            outcome.value: count
+            for outcome, count in counts.items()
+        }
+
+        for finding in findings:
+            if outcome_for_status(
+                finding.get("status", "")
+            ) == Outcome.INSUFFICIENT_EVIDENCE:
+                code = finding.get("reason_code", "unknown")
+                insufficient_by_reason[code] = (
+                    insufficient_by_reason.get(code, 0) + 1
+                )
 
         decided = counts[Outcome.COMPLIANT] + counts[Outcome.GAP]
         in_scope = decided + counts[Outcome.INSUFFICIENT_EVIDENCE]
+
         if in_scope:
             decided_percent = round(100 * decided / in_scope, 1)
+
         if not findings:
-            reasons.append("Agent 3 returned no findings, so nothing was assessed.")
+            reasons.append(
+                "Agent 3 returned no findings, so nothing was assessed."
+            )
 
         alignment_failures = int(alignment.get("llm_failures", 0))
-        failed_calls = [str(call) for call in alignment.get("failed_calls", [])]
-        unknown_verdict_ids = [str(i) for i in alignment.get("unknown_verdict_ids", [])]
+        failed_calls = [
+            str(call) for call in alignment.get("failed_calls", [])
+        ]
+        unknown_verdict_ids = [
+            str(item) for item in alignment.get("unknown_verdict_ids", [])
+        ]
         text_chars = alignment.get("policy_text_chars")
-        truncated = bool(alignment.get("policy_text_truncated", False))
+        truncated = bool(
+            alignment.get("policy_text_truncated", False)
+        )
 
         if alignment_failures > 0 or failed_calls:
-            detail = f": {', '.join(failed_calls)}" if failed_calls else ""
-            reasons.append(
-                f"Agent 3 gave up on {alignment_failures} model call(s){detail}."
+            detail = (
+                f": {', '.join(failed_calls)}"
+                if failed_calls else ""
             )
-        if "undeclared" in failed_calls:
             reasons.append(
-                "The undeclared-behaviour check did not run, so 'no undeclared "
-                "findings' is not a clean result."
-            )
-        model_problems = sum(
-            insufficient_by_reason.get(code, 0) for code in MODEL_PROBLEM_CODES
-        )
-        if model_problems:
-            reasons.append(
-                f"{model_problems} finding(s) could not be assessed because of a "
-                "model problem; a retry may fix them."
-            )
-        if truncated:
-            reasons.append(
-                f"The policy text was cut ({text_chars} characters before the "
-                "cut), so Agent 3 did not see the whole policy and 'undeclared' "
-                "findings may be wrong."
+                f"Agent 3 gave up on {alignment_failures} model call(s)"
+                f"{detail}."
             )
 
-    # Evidence gate: checks the evidence behind Agent 3's findings.
+        if "undeclared" in failed_calls:
+            reasons.append(
+                "The undeclared-behaviour check did not run, so "
+                "'no undeclared findings' is not a clean result."
+            )
+
+        model_problems = sum(
+            insufficient_by_reason.get(code, 0)
+            for code in MODEL_PROBLEM_CODES
+        )
+
+        if model_problems:
+            reasons.append(
+                f"{model_problems} finding(s) could not be assessed "
+                "because of a model problem; a retry may fix them."
+            )
+
+        if truncated:
+            reasons.append(
+                f"The policy text was cut ({text_chars} characters before "
+                "the cut), so Agent 3 did not see the whole policy and "
+                "'undeclared' findings may be wrong."
+            )
+
+    # Agent 3 evidence gate.
     gate = state.evidence_gate
     gate_counts = None
     gate_warnings: list[str] = []
+
     if gate is not None:
         gate_counts = {
-            str(key): int(value) for key, value in (gate.get("counts") or {}).items()
+            str(key): int(value)
+            for key, value in (gate.get("counts") or {}).items()
         }
-        gate_warnings = [str(w) for w in (gate.get("warnings") or [])]
+        gate_warnings = [
+            str(warning) for warning in (gate.get("warnings") or [])
+        ]
+
         blocked = gate_counts.get("blocked", 0)
+
         if blocked:
             reasons.append(
-                f"{blocked} finding(s) were blocked by the evidence gate: the "
-                "scan behind them was incomplete or a cited fact was missing, "
-                "so they are not reported as gaps."
+                f"{blocked} finding(s) were blocked by the evidence gate: "
+                "the scan behind them was incomplete or a cited fact was "
+                "missing, so they are not reported as gaps."
+            )
+
+    # Agent 4, legal gate, scoring and Agent 5.
+    legal_status_counts = None
+    legal_failed_llm_calls = None
+    legal_retrieval_failures = None
+    legal_gate_changes = None
+    score_available = None
+    score_value = None
+    score_withheld_reason = None
+    report_generated = None
+
+    if _final_stage_started(state):
+        original = state.legal_analysis_original
+        gated = state.legal_analysis_gated
+
+        if original is None:
+            reasons.append(
+                "Agent 4 produced no legal analysis result."
+            )
+        else:
+            legal_findings = original.get("findings", [])
+
+            legal_status_counts = {}
+            for finding in legal_findings:
+                status = str(finding.get("status", "unknown"))
+                legal_status_counts[status] = (
+                    legal_status_counts.get(status, 0) + 1
+                )
+
+            legal_failed_llm_calls = len(
+                original.get("failed_calls", [])
+            )
+            legal_retrieval_failures = len(
+                original.get("retrieval_failures", [])
+            )
+
+            if not legal_findings:
+                reasons.append(
+                    "Agent 4 returned no legal findings, so no legal "
+                    "outcomes were assessed."
+                )
+
+            if legal_failed_llm_calls:
+                reasons.append(
+                    f"Agent 4 recorded {legal_failed_llm_calls} "
+                    "failed LLM call(s)."
+                )
+
+            if legal_retrieval_failures:
+                reasons.append(
+                    f"Agent 4 recorded {legal_retrieval_failures} "
+                    "retrieval failure(s)."
+                )
+
+        if gated is None:
+            reasons.append(
+                "No gated legal result is available."
+            )
+
+        if state.legal_gate_application is not None:
+            changes = state.legal_gate_application.get("changes", [])
+            legal_gate_changes = len(changes)
+
+        score = state.compliance_score
+
+        if score is None:
+            reasons.append(
+                "No compliance scoring result is available."
+            )
+        else:
+            score_value = score.get("score")
+            score_available = score_value is not None
+            score_withheld_reason = score.get("score_withheld_reason")
+
+        report_generated = state.compliance_report is not None
+
+        if not report_generated:
+            reasons.append(
+                "Agent 5 did not produce a compliance report."
             )
 
     return AssessmentSummary(
@@ -235,10 +402,18 @@ def summarize_assessment(state: AssessmentState) -> AssessmentSummary:
         alignment_failed_calls=failed_calls,
         alignment_unknown_verdict_ids=unknown_verdict_ids,
         documents_without_claims=missing_documents,
-        failed_steps=failed_steps,
-        warnings=warnings,
         gate_counts=gate_counts,
         gate_warnings=gate_warnings,
+        legal_status_counts=legal_status_counts,
+        legal_failed_llm_calls=legal_failed_llm_calls,
+        legal_retrieval_failures=legal_retrieval_failures,
+        legal_gate_changes=legal_gate_changes,
+        compliance_score_available=score_available,
+        compliance_score=score_value,
+        score_withheld_reason=score_withheld_reason,
+        report_generated=report_generated,
+        failed_steps=failed_steps,
+        warnings=warnings,
         incomplete_reasons=reasons,
         is_complete=not reasons,
     )

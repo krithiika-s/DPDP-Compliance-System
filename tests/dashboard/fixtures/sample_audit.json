@@ -1,0 +1,1123 @@
+{
+  "audit_version": 1,
+  "created_at": "2026-11-22T00:00:00Z",
+  "assessment_id": "SYNTHETIC-AUDIT-001",
+  "project_path": "C:/synthetic-demo/privacy-app",
+  "policy_documents": [
+    {
+      "name": "synthetic_privacy_policy.md",
+      "chars": 719
+    }
+  ],
+  "policy_claims": [
+    {
+      "claim": "The demo application requests consent before saving optional profile preferences.",
+      "category": "other",
+      "evidence": "Synthetic evidence: the demo application displays a consent option before saving preferences.",
+      "source": "synthetic_privacy_policy.md"
+    },
+    {
+      "claim": "The demo application requests consent before saving optional profile preferences.",
+      "category": "purpose_limitation",
+      "evidence": "Synthetic evidence: the demo application displays a consent option before saving preferences.",
+      "source": "synthetic_privacy_policy.md"
+    },
+    {
+      "claim": "The demo application requests consent before saving optional profile preferences.",
+      "category": "consent",
+      "evidence": "Synthetic evidence: the demo application displays a consent option before saving preferences.",
+      "source": "synthetic_privacy_policy.md"
+    },
+    {
+      "claim": "The demo application requests consent before saving optional profile preferences.",
+      "category": "data_principal_rights",
+      "evidence": "Synthetic evidence: the demo application displays a consent option before saving preferences.",
+      "source": "synthetic_privacy_policy.md"
+    },
+    {
+      "claim": "The demo application requests consent before saving optional profile preferences.",
+      "category": "storage_retention",
+      "evidence": "Synthetic evidence: the demo application displays a consent option before saving preferences.",
+      "source": "synthetic_privacy_policy.md"
+    },
+    {
+      "claim": "The demo application requests consent before saving optional profile preferences.",
+      "category": "security_safeguards",
+      "evidence": "Synthetic evidence: the demo application displays a consent option before saving preferences.",
+      "source": "synthetic_privacy_policy.md"
+    }
+  ],
+  "rejected_claims": [],
+  "implementation_report": {
+    "project_path": "C:/synthetic-demo/privacy-app",
+    "files_scanned": 9,
+    "coverage": {
+      "model_field": 2,
+      "consent_logic": 1,
+      "form_input": 2,
+      "consent_ui": 1,
+      "data_write": 1
+    },
+    "evidence": [
+      {
+        "id": "E001",
+        "kind": "model_field",
+        "location": {
+          "file": "src/demo_app.py",
+          "line": 4
+        },
+        "snippet": "Synthetic code example: consent_given = request.form.get('consent')",
+        "detail": {
+          "model": "DemoUser",
+          "field": "consent_status",
+          "field_type": "boolean",
+          "options": {
+            "unique": "synthetic"
+          }
+        }
+      },
+      {
+        "id": "E002",
+        "kind": "model_field",
+        "location": {
+          "file": "src/demo_app.py",
+          "line": 5
+        },
+        "snippet": "Synthetic code example: consent_given = request.form.get('consent')",
+        "detail": {
+          "model": "DemoUser",
+          "field": "consent_status",
+          "field_type": "boolean",
+          "options": {
+            "max_length": "Synthetic example value"
+          }
+        }
+      },
+      {
+        "id": "E003",
+        "kind": "consent_logic",
+        "location": {
+          "file": "src/demo_app.py",
+          "line": 6
+        },
+        "snippet": "Synthetic code example: consent_given = request.form.get('consent')",
+        "detail": {
+          "model": "DemoUser",
+          "field": "consent_status",
+          "field_type": "boolean",
+          "options": {
+            "default": "Synthetic example value"
+          }
+        }
+      },
+      {
+        "id": "E004",
+        "kind": "form_input",
+        "location": {
+          "file": "src/demo_app.py",
+          "line": 3
+        },
+        "snippet": "Synthetic code example: consent_given = request.form.get('consent')",
+        "detail": {
+          "name": "synthetic_privacy_policy.md"
+        }
+      },
+      {
+        "id": "E005",
+        "kind": "form_input",
+        "location": {
+          "file": "src/demo_app.py",
+          "line": 4
+        },
+        "snippet": "Synthetic code example: consent_given = request.form.get('consent')",
+        "detail": {
+          "name": "synthetic_privacy_policy.md"
+        }
+      },
+      {
+        "id": "E006",
+        "kind": "consent_ui",
+        "location": {
+          "file": "src/demo_app.py",
+          "line": 5
+        },
+        "snippet": "Synthetic code example: consent_given = request.form.get('consent')",
+        "detail": {
+          "input": "Synthetic example value"
+        }
+      },
+      {
+        "id": "E007",
+        "kind": "data_write",
+        "location": {
+          "file": "src/demo_app.py",
+          "line": 4
+        },
+        "snippet": "Synthetic code example: consent_given = request.form.get('consent')",
+        "detail": {
+          "function": "Synthetic example value",
+          "calls": [
+            "Synthetic example value"
+          ],
+          "fields": [
+            "Synthetic example value",
+            "Synthetic example value",
+            "Synthetic example value"
+          ],
+          "references_consent": true,
+          "references_purpose": false
+        }
+      }
+    ],
+    "facts": [
+      {
+        "id": "F-TRANSPARENCY_NOTICE-01",
+        "category": "transparency_notice",
+        "statement": "The demo application records the user's consent preference.",
+        "fact_type": "present",
+        "evidence_ids": [
+          "E001",
+          "E002"
+        ],
+        "locations": [
+          {
+            "file": "src/demo_app.py",
+            "line": 4
+          },
+          {
+            "file": "src/demo_app.py",
+            "line": 5
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-TRANSPARENCY_NOTICE-02",
+        "category": "transparency_notice",
+        "statement": "The demo application records the user's consent preference.",
+        "fact_type": "present",
+        "evidence_ids": [
+          "E004",
+          "E005"
+        ],
+        "locations": [
+          {
+            "file": "src/demo_app.py",
+            "line": 3
+          },
+          {
+            "file": "src/demo_app.py",
+            "line": 4
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-TRANSPARENCY_NOTICE-03",
+        "category": "transparency_notice",
+        "statement": "The demo application records the user's consent preference.",
+        "fact_type": "present",
+        "evidence_ids": [
+          "E006"
+        ],
+        "locations": [
+          {
+            "file": "src/demo_app.py",
+            "line": 5
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-TRANSPARENCY_NOTICE-04",
+        "category": "transparency_notice",
+        "statement": "The demo application records the user's consent preference.",
+        "fact_type": "absent",
+        "evidence_ids": [],
+        "locations": [],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-TRANSPARENCY_NOTICE-05",
+        "category": "transparency_notice",
+        "statement": "The demo application records the user's consent preference.",
+        "fact_type": "absent",
+        "evidence_ids": [],
+        "locations": [],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-TRANSPARENCY_NOTICE-06",
+        "category": "transparency_notice",
+        "statement": "The demo application records the user's consent preference.",
+        "fact_type": "absent",
+        "evidence_ids": [],
+        "locations": [],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-CONSENT-01",
+        "category": "consent",
+        "statement": "The demo application records the user's consent preference.",
+        "fact_type": "present",
+        "evidence_ids": [
+          "E003"
+        ],
+        "locations": [
+          {
+            "file": "src/demo_app.py",
+            "line": 6
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-CONSENT-02",
+        "category": "consent",
+        "statement": "The demo application records the user's consent preference.",
+        "fact_type": "present",
+        "evidence_ids": [
+          "E006"
+        ],
+        "locations": [
+          {
+            "file": "src/demo_app.py",
+            "line": 5
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-CONSENT-03",
+        "category": "consent",
+        "statement": "The demo application records the user's consent preference.",
+        "fact_type": "present",
+        "evidence_ids": [
+          "E007"
+        ],
+        "locations": [
+          {
+            "file": "src/demo_app.py",
+            "line": 4
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-PURPOSE_LIMITATION-01",
+        "category": "purpose_limitation",
+        "statement": "The demo application records the user's consent preference.",
+        "fact_type": "present",
+        "evidence_ids": [
+          "E007"
+        ],
+        "locations": [
+          {
+            "file": "src/demo_app.py",
+            "line": 4
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-PURPOSE_LIMITATION-02",
+        "category": "purpose_limitation",
+        "statement": "The demo application records the user's consent preference.",
+        "fact_type": "absent",
+        "evidence_ids": [
+          "E007"
+        ],
+        "locations": [
+          {
+            "file": "src/demo_app.py",
+            "line": 4
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-PURPOSE_LIMITATION-03",
+        "category": "purpose_limitation",
+        "statement": "The demo application records the user's consent preference.",
+        "fact_type": "absent",
+        "evidence_ids": [
+          "E007"
+        ],
+        "locations": [
+          {
+            "file": "src/demo_app.py",
+            "line": 4
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-PURPOSE_LIMITATION-04",
+        "category": "purpose_limitation",
+        "statement": "The demo application records the user's consent preference.",
+        "fact_type": "absent",
+        "evidence_ids": [
+          "E007"
+        ],
+        "locations": [
+          {
+            "file": "src/demo_app.py",
+            "line": 4
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-PURPOSE_LIMITATION-05",
+        "category": "purpose_limitation",
+        "statement": "The demo application records the user's consent preference.",
+        "fact_type": "absent",
+        "evidence_ids": [
+          "E007"
+        ],
+        "locations": [
+          {
+            "file": "src/demo_app.py",
+            "line": 4
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-PURPOSE_LIMITATION-06",
+        "category": "purpose_limitation",
+        "statement": "The demo application records the user's consent preference.",
+        "fact_type": "absent",
+        "evidence_ids": [
+          "E007"
+        ],
+        "locations": [
+          {
+            "file": "src/demo_app.py",
+            "line": 4
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-DATA_MINIMIZATION-01",
+        "category": "data_minimization",
+        "statement": "The demo application records the user's consent preference.",
+        "fact_type": "present",
+        "evidence_ids": [
+          "E001",
+          "E002"
+        ],
+        "locations": [
+          {
+            "file": "src/demo_app.py",
+            "line": 4
+          },
+          {
+            "file": "src/demo_app.py",
+            "line": 5
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-DATA_MINIMIZATION-02",
+        "category": "data_minimization",
+        "statement": "The demo application records the user's consent preference.",
+        "fact_type": "present",
+        "evidence_ids": [
+          "E004",
+          "E005"
+        ],
+        "locations": [
+          {
+            "file": "src/demo_app.py",
+            "line": 3
+          },
+          {
+            "file": "src/demo_app.py",
+            "line": 4
+          }
+        ],
+        "confidence": 1.0
+      },
+      {
+        "id": "F-STORAGE_RETENTION-01",
+        "category": "storage_retention",
+        "statement": "The demo application records the user's consent preference.",
+        "fact_type": "absent",
+        "evidence_ids": [],
+        "locations": [],
+        "confidence": 1.0
+      }
+    ],
+    "llm_retries": 0,
+    "llm_failures": 0,
+    "failed_categories": []
+  },
+  "alignment_result": {
+    "findings": [
+      {
+        "id": "A-001",
+        "kind": "claim_check",
+        "category": "other",
+        "status": "out_of_scope",
+        "reason_code": "out_of_scope",
+        "claim": {
+          "claim": "The demo application requests consent before saving optional profile preferences.",
+          "category": "other",
+          "evidence": "Synthetic evidence: the demo application displays a consent option before saving preferences.",
+          "source": "synthetic_privacy_policy.md"
+        },
+        "claim_id": "pc_101bd8dc3b7b",
+        "fact_ids": [],
+        "evidence_ids": [],
+        "code_locations": [],
+        "reasoning": "Synthetic assessment reasoning for dashboard testing only.",
+        "confidence": 0.5
+      },
+      {
+        "id": "A-002",
+        "kind": "claim_check",
+        "category": "data_principal_rights",
+        "status": "out_of_scope",
+        "reason_code": "out_of_scope",
+        "claim": {
+          "claim": "The demo application requests consent before saving optional profile preferences.",
+          "category": "data_principal_rights",
+          "evidence": "Synthetic evidence: the demo application displays a consent option before saving preferences.",
+          "source": "synthetic_privacy_policy.md"
+        },
+        "claim_id": "pc_5aa77d1b5d36",
+        "fact_ids": [],
+        "evidence_ids": [],
+        "code_locations": [],
+        "reasoning": "Synthetic assessment reasoning for dashboard testing only.",
+        "confidence": 0.5
+      },
+      {
+        "id": "A-003",
+        "kind": "claim_check",
+        "category": "security_safeguards",
+        "status": "out_of_scope",
+        "reason_code": "out_of_scope",
+        "claim": {
+          "claim": "The demo application requests consent before saving optional profile preferences.",
+          "category": "security_safeguards",
+          "evidence": "Synthetic evidence: the demo application displays a consent option before saving preferences.",
+          "source": "synthetic_privacy_policy.md"
+        },
+        "claim_id": "pc_ec97be6e67e3",
+        "fact_ids": [],
+        "evidence_ids": [],
+        "code_locations": [],
+        "reasoning": "Synthetic assessment reasoning for dashboard testing only.",
+        "confidence": 0.5
+      },
+      {
+        "id": "A-004",
+        "kind": "claim_check",
+        "category": "consent",
+        "status": "unverifiable",
+        "reason_code": "evidence_gap",
+        "claim": {
+          "claim": "The demo application requests consent before saving optional profile preferences.",
+          "category": "consent",
+          "evidence": "Synthetic evidence: the demo application displays a consent option before saving preferences.",
+          "source": "synthetic_privacy_policy.md"
+        },
+        "claim_id": "pc_adf4a955bdd6",
+        "fact_ids": [],
+        "evidence_ids": [],
+        "code_locations": [],
+        "reasoning": "Synthetic assessment reasoning for dashboard testing only.",
+        "confidence": 0.5
+      },
+      {
+        "id": "A-005",
+        "kind": "claim_check",
+        "category": "purpose_limitation",
+        "status": "aligned",
+        "reason_code": "model_assessed",
+        "claim": {
+          "claim": "The demo application requests consent before saving optional profile preferences.",
+          "category": "purpose_limitation",
+          "evidence": "Synthetic evidence: the demo application displays a consent option before saving preferences.",
+          "source": "synthetic_privacy_policy.md"
+        },
+        "claim_id": "pc_c3360c6724a7",
+        "fact_ids": [
+          "F-PURPOSE_LIMITATION-01"
+        ],
+        "evidence_ids": [
+          "E007"
+        ],
+        "code_locations": [
+          {
+            "file": "src/demo_app.py",
+            "line": 4
+          }
+        ],
+        "reasoning": "Synthetic assessment reasoning for dashboard testing only.",
+        "confidence": 0.95
+      },
+      {
+        "id": "A-006",
+        "kind": "claim_check",
+        "category": "storage_retention",
+        "status": "violated",
+        "reason_code": "model_assessed",
+        "claim": {
+          "claim": "The demo application requests consent before saving optional profile preferences.",
+          "category": "storage_retention",
+          "evidence": "Synthetic evidence: the demo application displays a consent option before saving preferences.",
+          "source": "synthetic_privacy_policy.md"
+        },
+        "claim_id": "pc_c07963ac7a93",
+        "fact_ids": [
+          "F-STORAGE_RETENTION-01"
+        ],
+        "evidence_ids": [],
+        "code_locations": [],
+        "reasoning": "Synthetic assessment reasoning for dashboard testing only.",
+        "confidence": 0.9
+      }
+    ],
+    "summary": {
+      "out_of_scope": 3,
+      "unverifiable": 1,
+      "aligned": 1,
+      "violated": 1
+    },
+    "llm_retries": 2,
+    "llm_failures": 0,
+    "failed_calls": [],
+    "unknown_verdict_ids": [],
+    "policy_text_chars": 755,
+    "policy_text_truncated": false
+  },
+  "evidence_gate": {
+    "decisions": [
+      {
+        "finding_id": "A-001",
+        "decision": "not_gated",
+        "reasons": []
+      },
+      {
+        "finding_id": "A-002",
+        "decision": "not_gated",
+        "reasons": []
+      },
+      {
+        "finding_id": "A-003",
+        "decision": "not_gated",
+        "reasons": []
+      },
+      {
+        "finding_id": "A-004",
+        "decision": "not_gated",
+        "reasons": []
+      },
+      {
+        "finding_id": "A-005",
+        "decision": "not_gated",
+        "reasons": []
+      },
+      {
+        "finding_id": "A-006",
+        "decision": "review_only",
+        "reasons": [
+          "Synthetic example value"
+        ]
+      }
+    ],
+    "warnings": [],
+    "counts": {
+      "not_gated": 5,
+      "review_only": 1
+    }
+  },
+  "legal_analysis_original": {
+    "findings": [
+      {
+        "alignment_finding_id": "A-001",
+        "status": "not_applicable",
+        "applicable_provisions": [],
+        "legal_reasoning": "Synthetic legal analysis for demonstration purposes; not an actual legal conclusion.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "Synthetic example limitation; not based on an actual application."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-002",
+        "status": "not_applicable",
+        "applicable_provisions": [],
+        "legal_reasoning": "Synthetic legal analysis for demonstration purposes; not an actual legal conclusion.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "Synthetic example limitation; not based on an actual application."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-003",
+        "status": "not_applicable",
+        "applicable_provisions": [],
+        "legal_reasoning": "Synthetic legal analysis for demonstration purposes; not an actual legal conclusion.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "Synthetic example limitation; not based on an actual application."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-004",
+        "status": "insufficient_evidence",
+        "applicable_provisions": [],
+        "legal_reasoning": "Synthetic legal analysis for demonstration purposes; not an actual legal conclusion.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "Synthetic example limitation; not based on an actual application."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-005",
+        "status": "insufficient_evidence",
+        "applicable_provisions": [
+          "Synthetic policy section 1 (illustrative only)."
+        ],
+        "legal_reasoning": "Synthetic legal analysis for demonstration purposes; not an actual legal conclusion.",
+        "evidence_fact_ids": [
+          "F-PURPOSE_LIMITATION-01"
+        ],
+        "citations": [
+          {
+            "source_id": "Synthetic example value",
+            "provision": "Synthetic example value",
+            "document_type": "Synthetic example value",
+            "source_file": "Synthetic example value",
+            "pdf_page": 4,
+            "excerpt": "Synthetic example value"
+          }
+        ],
+        "confidence": 0.6,
+        "limitations": [
+          "Synthetic example limitation; not based on an actual application."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-006",
+        "status": "requires_review",
+        "applicable_provisions": [],
+        "legal_reasoning": "Synthetic legal analysis for demonstration purposes; not an actual legal conclusion.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "Synthetic example limitation; not based on an actual application."
+        ]
+      }
+    ],
+    "summary": {
+      "potential_non_compliance": 0,
+      "potential_compliance": 0,
+      "insufficient_evidence": 2,
+      "not_applicable": 3,
+      "requires_review": 1
+    },
+    "sources_consulted": [
+      "Synthetic test source: Demo Privacy Policy."
+    ],
+    "failed_calls": [],
+    "retrieval_failures": []
+  },
+  "legal_analysis_gated": {
+    "findings": [
+      {
+        "alignment_finding_id": "A-001",
+        "status": "not_applicable",
+        "applicable_provisions": [],
+        "legal_reasoning": "Synthetic legal analysis for demonstration purposes; not an actual legal conclusion.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "Synthetic example limitation; not based on an actual application."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-002",
+        "status": "not_applicable",
+        "applicable_provisions": [],
+        "legal_reasoning": "Synthetic legal analysis for demonstration purposes; not an actual legal conclusion.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "Synthetic example limitation; not based on an actual application."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-003",
+        "status": "not_applicable",
+        "applicable_provisions": [],
+        "legal_reasoning": "Synthetic legal analysis for demonstration purposes; not an actual legal conclusion.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "Synthetic example limitation; not based on an actual application."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-004",
+        "status": "insufficient_evidence",
+        "applicable_provisions": [],
+        "legal_reasoning": "Synthetic legal analysis for demonstration purposes; not an actual legal conclusion.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "Synthetic example limitation; not based on an actual application."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-005",
+        "status": "insufficient_evidence",
+        "applicable_provisions": [
+          "Synthetic policy section 1 (illustrative only)."
+        ],
+        "legal_reasoning": "Synthetic legal analysis for demonstration purposes; not an actual legal conclusion.",
+        "evidence_fact_ids": [
+          "F-PURPOSE_LIMITATION-01"
+        ],
+        "citations": [
+          {
+            "source_id": "Synthetic example value",
+            "provision": "Synthetic example value",
+            "document_type": "Synthetic example value",
+            "source_file": "Synthetic example value",
+            "pdf_page": 4,
+            "excerpt": "Synthetic example value"
+          }
+        ],
+        "confidence": 0.6,
+        "limitations": [
+          "Synthetic example limitation; not based on an actual application."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-006",
+        "status": "requires_review",
+        "applicable_provisions": [],
+        "legal_reasoning": "Synthetic legal analysis for demonstration purposes; not an actual legal conclusion.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "Synthetic example limitation; not based on an actual application.",
+          "Synthetic example limitation; not based on an actual application."
+        ]
+      }
+    ],
+    "summary": {
+      "potential_non_compliance": 0,
+      "potential_compliance": 0,
+      "insufficient_evidence": 2,
+      "not_applicable": 3,
+      "requires_review": 1
+    },
+    "sources_consulted": [
+      "Synthetic test source: Demo Privacy Policy."
+    ],
+    "failed_calls": [],
+    "retrieval_failures": []
+  },
+  "legal_gate_application": {
+    "changes": []
+  },
+  "compliance_score": {
+    "score": null,
+    "total_findings": 6,
+    "assessed_findings": 0,
+    "potential_compliance_count": 0,
+    "potential_non_compliance_count": 0,
+    "insufficient_evidence_count": 2,
+    "requires_review_count": 1,
+    "not_applicable_count": 3,
+    "assessment_coverage_percent": 0.0,
+    "minimum_coverage_percent": 50.0,
+    "score_withheld_reason": "No findings have a legally assessable outcome.",
+    "score_description": "Synthetic test fixture; no compliance score is calculated."
+  },
+  "compliance_report": {
+    "assessment_id": "SYNTHETIC-AUDIT-001",
+    "score": {
+      "score": null,
+      "total_findings": 6,
+      "assessed_findings": 0,
+      "potential_compliance_count": 0,
+      "potential_non_compliance_count": 0,
+      "insufficient_evidence_count": 2,
+      "requires_review_count": 1,
+      "not_applicable_count": 3,
+      "assessment_coverage_percent": 0.0,
+      "minimum_coverage_percent": 50.0,
+      "score_withheld_reason": "No findings have a legally assessable outcome.",
+      "score_description": "Synthetic test fixture; no compliance score is calculated."
+    },
+    "findings": [
+      {
+        "alignment_finding_id": "A-001",
+        "status": "not_applicable",
+        "applicable_provisions": [],
+        "legal_reasoning": "Synthetic legal analysis for demonstration purposes; not an actual legal conclusion.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "Synthetic example limitation; not based on an actual application."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-002",
+        "status": "not_applicable",
+        "applicable_provisions": [],
+        "legal_reasoning": "Synthetic legal analysis for demonstration purposes; not an actual legal conclusion.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "Synthetic example limitation; not based on an actual application."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-003",
+        "status": "not_applicable",
+        "applicable_provisions": [],
+        "legal_reasoning": "Synthetic legal analysis for demonstration purposes; not an actual legal conclusion.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "Synthetic example limitation; not based on an actual application."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-004",
+        "status": "insufficient_evidence",
+        "applicable_provisions": [],
+        "legal_reasoning": "Synthetic legal analysis for demonstration purposes; not an actual legal conclusion.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "Synthetic example limitation; not based on an actual application."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-005",
+        "status": "insufficient_evidence",
+        "applicable_provisions": [
+          "Synthetic policy section 1 (illustrative only)."
+        ],
+        "legal_reasoning": "Synthetic legal analysis for demonstration purposes; not an actual legal conclusion.",
+        "evidence_fact_ids": [
+          "F-PURPOSE_LIMITATION-01"
+        ],
+        "citations": [
+          {
+            "source_id": "Synthetic example value",
+            "provision": "Synthetic example value",
+            "document_type": "Synthetic example value",
+            "source_file": "Synthetic example value",
+            "pdf_page": 4,
+            "excerpt": "Synthetic example value"
+          }
+        ],
+        "confidence": 0.6,
+        "limitations": [
+          "Synthetic example limitation; not based on an actual application."
+        ]
+      },
+      {
+        "alignment_finding_id": "A-006",
+        "status": "requires_review",
+        "applicable_provisions": [],
+        "legal_reasoning": "Synthetic legal analysis for demonstration purposes; not an actual legal conclusion.",
+        "evidence_fact_ids": [],
+        "citations": [],
+        "confidence": 0.5,
+        "limitations": [
+          "Synthetic example limitation; not based on an actual application.",
+          "Synthetic example limitation; not based on an actual application."
+        ]
+      }
+    ],
+    "recommendations": [
+      {
+        "finding_id": "A-004",
+        "priority": "medium",
+        "action": "Add a clear consent notice to the synthetic demo application.",
+        "reason": "Synthetic recommendation based on the demonstration record."
+      },
+      {
+        "finding_id": "A-005",
+        "priority": "medium",
+        "action": "Add a clear consent notice to the synthetic demo application.",
+        "reason": "Synthetic recommendation based on the demonstration record."
+      },
+      {
+        "finding_id": "A-006",
+        "priority": "high",
+        "action": "Add a clear consent notice to the synthetic demo application.",
+        "reason": "Synthetic recommendation based on the demonstration record."
+      }
+    ],
+    "sources_consulted": [
+      "Synthetic test source: Demo Privacy Policy."
+    ],
+    "executive_summary": "This synthetic audit demonstrates the dashboard's reporting features.",
+    "disclaimer": "This synthetic record is for dashboard testing only. It is not legal advice, a legal assessment, or a compliance certification.",
+    "failed_calls": [],
+    "retrieval_failures": []
+  },
+  "step_log": [
+    {
+      "step": "synthetic_demo_step",
+      "target": "synthetic_demo_component",
+      "status": "retrying",
+      "attempt": 1,
+      "message": "Synthetic pipeline step completed successfully.",
+      "timestamp": "2026-11-22T00:00:00Z"
+    },
+    {
+      "step": "synthetic_demo_step",
+      "target": "synthetic_demo_component",
+      "status": "retrying",
+      "attempt": 2,
+      "message": "Synthetic pipeline step completed successfully.",
+      "timestamp": "2026-11-22T00:00:00Z"
+    },
+    {
+      "step": "synthetic_demo_step",
+      "target": "synthetic_demo_component",
+      "status": "completed",
+      "attempt": 3,
+      "message": "Synthetic pipeline step completed successfully.",
+      "timestamp": "2026-11-22T00:00:00Z"
+    },
+    {
+      "step": "synthetic_demo_step",
+      "target": "synthetic_demo_component",
+      "status": "retrying",
+      "attempt": 1,
+      "message": "Synthetic pipeline step completed successfully.",
+      "timestamp": "2026-11-22T00:00:00Z"
+    },
+    {
+      "step": "synthetic_demo_step",
+      "target": "synthetic_demo_component",
+      "status": "completed",
+      "attempt": 2,
+      "message": "Synthetic pipeline step completed successfully.",
+      "timestamp": "2026-11-22T00:00:00Z"
+    },
+    {
+      "step": "synthetic_demo_step",
+      "target": "synthetic_demo_component",
+      "status": "completed",
+      "attempt": 1,
+      "message": "Synthetic pipeline step completed successfully.",
+      "timestamp": "2026-11-22T00:00:00Z"
+    },
+    {
+      "step": "synthetic_demo_step",
+      "target": "synthetic_demo_component",
+      "status": "completed",
+      "attempt": 1,
+      "message": "Synthetic pipeline step completed successfully.",
+      "timestamp": "2026-11-22T00:00:00Z"
+    },
+    {
+      "step": "synthetic_demo_step",
+      "target": "synthetic_demo_component",
+      "status": "completed",
+      "attempt": 1,
+      "message": "Synthetic pipeline step completed successfully.",
+      "timestamp": "2026-11-22T00:00:00Z"
+    },
+    {
+      "step": "synthetic_demo_step",
+      "target": "synthetic_demo_component",
+      "status": "completed",
+      "attempt": 1,
+      "message": "Synthetic pipeline step completed successfully.",
+      "timestamp": "2026-11-22T00:00:00Z"
+    },
+    {
+      "step": "synthetic_demo_step",
+      "target": "synthetic_demo_component",
+      "status": "completed",
+      "attempt": 1,
+      "message": "Synthetic pipeline step completed successfully.",
+      "timestamp": "2026-11-22T00:00:00Z"
+    },
+    {
+      "step": "synthetic_demo_step",
+      "target": "synthetic_demo_component",
+      "status": "completed",
+      "attempt": 1,
+      "message": "Synthetic pipeline step completed successfully.",
+      "timestamp": "2026-11-22T00:00:00Z"
+    }
+  ],
+  "summary": {
+    "assessment_id": "SYNTHETIC-AUDIT-001",
+    "outcome_counts": {
+      "compliant": 1,
+      "gap": 1,
+      "insufficient_evidence": 1,
+      "not_assessed": 3
+    },
+    "insufficient_by_reason": {
+      "evidence_gap": 1
+    },
+    "decided_percent": 66.7,
+    "policy_text_chars": 755,
+    "policy_text_truncated": false,
+    "implementation_llm_failures": 0,
+    "alignment_llm_failures": 0,
+    "alignment_failed_calls": [],
+    "alignment_unknown_verdict_ids": [],
+    "documents_without_claims": [],
+    "gate_counts": {
+      "not_gated": 5,
+      "review_only": 1
+    },
+    "gate_warnings": [],
+    "legal_status_counts": {
+      "not_applicable": 3,
+      "insufficient_evidence": 2,
+      "requires_review": 1
+    },
+    "legal_failed_llm_calls": 0,
+    "legal_retrieval_failures": 0,
+    "legal_gate_changes": 0,
+    "compliance_score_available": false,
+    "compliance_score": null,
+    "score_withheld_reason": "No findings have a legally assessable outcome.",
+    "report_generated": true,
+    "failed_steps": [],
+    "warnings": [],
+    "incomplete_reasons": [],
+    "is_complete": true
+  }
+}
